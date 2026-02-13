@@ -48,5 +48,5 @@ This project demonstrates how Artificial Intelligence can be used in healthcare 
 ---
 
 ## 👨‍💻 Author
-Midhilesh Dontheneni
+Midhilesh Dontineni
 
