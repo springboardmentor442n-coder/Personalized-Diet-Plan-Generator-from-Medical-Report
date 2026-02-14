@@ -191,6 +191,7 @@ submit = st.button("🚀 Generate AI Diet Report")
 
 # ---------------- PROCESSING ----------------
 if submit:
+
     if file_path:
         values = extract_values(file_path)
         sugar, chol, bp = values.values()
@@ -202,52 +203,172 @@ if submit:
     calories = calculate_tdee(bmr, activity)
 
     issues = []
-    if sugar > 140: issues.append("Diabetes")
-    if chol > 200: issues.append("Cholesterol")
-    if bp > 130: issues.append("Hypertension")
+    if sugar > 140:
+        issues.append("Diabetes")
+    if chol > 200:
+        issues.append("Cholesterol")
+    if bp > 130:
+        issues.append("Hypertension")
 
     weekly_meal_plan = generate_detailed_weekly_plan(issues)
 
     st.session_state.update({
-        'generated': True,
-        'bmi': bmi,
-        'calories': calories,
-        'issues': issues,
-        'weekly_meal_plan': weekly_meal_plan,
-        'name': name
+        "generated": True,
+        "bmi": bmi,
+        "calories": calories,
+        "issues": issues,
+        "weekly_meal_plan": weekly_meal_plan,
+        "name": name
     })
 
-# ---------------- TAB 2: Health Analysis ----------------
+    # -------- GLOBAL SUCCESS MESSAGE --------
+    st.success(
+        "✅ Your AI Diet Report is Ready! "
+        "Please check the Health Analysis, Meal Plan, and Report tabs."
+    )
+
+    # Modern floating toast
+    st.toast("Report Generated Successfully 🎉")
+
+# ---------------- TAB 2: Modern Health Analysis ----------------
 with tab2:
     if st.session_state.get('generated', False):
         bmi = st.session_state['bmi']
         calories = st.session_state['calories']
         issues = st.session_state['issues']
 
-        st.subheader("📊 Clinical Health Overview")
+        # ---------- CUSTOM CSS ----------
+        st.markdown("""
+        <style>
+        .glass-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        .metric-title {
+            font-size:18px;
+            color:#9ca3af;
+        }
+        .metric-value {
+            font-size:28px;
+            font-weight:bold;
+            color:white;
+        }
+        .risk-low {color:#22c55e;}
+        .risk-mid {color:#f59e0b;}
+        .risk-high {color:#ef4444;}
+        </style>
+        """, unsafe_allow_html=True)
 
-        # Metrics
-        m1, m2, m3 = st.columns(3)
-        bmi_status = "✅ Healthy" if 18.5 <= bmi <= 24.9 else "⚠️ Needs Attention"
-        m1.metric("BMI", f"{bmi:.2f}", bmi_status)
-        m2.metric("Daily Calories", f"{int(calories)} kcal")
-        m3.metric("Medical Conditions", f"{len(issues)} condition(s) detected")
+        st.subheader("📊 AI Clinical Health Intelligence")
 
-        # Progress
-        st.markdown("**Condition Severity Progress:**")
-        st.progress(min(len(issues)/4, 1.0))
+        # ---------- BMI CATEGORY ----------
+        if bmi < 18.5:
+            bmi_cat = "Underweight"
+            bmi_color = "risk-mid"
+        elif 18.5 <= bmi <= 24.9:
+            bmi_cat = "Healthy"
+            bmi_color = "risk-low"
+        elif 25 <= bmi <= 29.9:
+            bmi_cat = "Overweight"
+            bmi_color = "risk-mid"
+        else:
+            bmi_cat = "Obese"
+            bmi_color = "risk-high"
+
+        # ---------- RISK SCORE ----------
+        risk_score = min(len(issues) * 25, 100)
+
+        # ---------- METRIC CARDS ----------
+        c1, c2, c3 = st.columns(3)
+
+        with c1:
+            st.markdown(f"""
+            <div class="glass-card">
+                <div class="metric-title">🧮 BMI Score</div>
+                <div class="metric-value">{bmi:.2f}</div>
+                <div class="{bmi_color}">{bmi_cat}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with c2:
+            st.markdown(f"""
+            <div class="glass-card">
+                <div class="metric-title">🔥 Daily Calories</div>
+                <div class="metric-value">{int(calories)}</div>
+                <div>kcal requirement</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with c3:
+            st.markdown(f"""
+            <div class="glass-card">
+                <div class="metric-title">🩺 Conditions Detected</div>
+                <div class="metric-value">{len(issues)}</div>
+                <div>clinical alerts</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # ---------- RISK GAUGE ----------
+        st.markdown("### 🧠 Overall Health Risk Score")
+        st.progress(risk_score / 100)
+
+        if risk_score <= 25:
+            st.success("Low Risk — Maintain your healthy lifestyle ✅")
+        elif risk_score <= 50:
+            st.warning("Moderate Risk — Preventive care advised ⚠️")
+        else:
+            st.error("High Risk — Medical & diet intervention required 🚨")
 
         st.divider()
 
-        # Medical Alerts
-        st.subheader("🚩 Medical Alerts")
+        # ---------- CONDITION ALERTS ----------
+        st.markdown("### 🚩 AI Medical Alerts")
+
         if issues:
             for issue in issues:
-                st.error(f"{issue}: {MEDICAL_RULES[issue]['Advice']}")
+                rule = MEDICAL_RULES[issue]
+
+                st.markdown(f"""
+                <div class="glass-card">
+                    <h4>⚠️ {issue}</h4>
+                    <b>Avoid:</b> {rule['Avoid']} <br>
+                    <b>Include:</b> {rule['Include']} <br>
+                    <b>Advice:</b> {rule['Advice']}
+                </div>
+                """, unsafe_allow_html=True)
         else:
-            st.success("All clinical values are normal 🎉")
+            st.success("No medical risks detected 🎉")
+
+        st.divider()
+
+        # ---------- AI HEALTH TIPS ----------
+        st.markdown("### ❤️ Personalized AI Health Tips")
+
+        tips = [
+            "Drink at least 2.5–3L water daily 💧",
+            "Walk 8,000–10,000 steps 🚶",
+            "Sleep 7–8 hours 😴",
+            "Reduce processed foods 🥗",
+            "Monitor blood markers monthly 🧪"
+        ]
+
+        if "Diabetes" in issues:
+            tips.append("Track blood sugar regularly 📉")
+        if "Hypertension" in issues:
+            tips.append("Practice meditation & reduce sodium 🧘")
+        if "Cholesterol" in issues:
+            tips.append("Increase soluble fiber intake 🌾")
+
+        for tip in tips:
+            st.markdown(f"- {tip}")
+
     else:
-        st.info("Please click 🚀 Generate AI Diet Report to see Health Analysis")
+        st.info("Please click 🚀 Generate AI Diet Report to view Health Analysis")
+
 
 # ---------------- TAB 3: Meal Plan ----------------
 with tab3:
