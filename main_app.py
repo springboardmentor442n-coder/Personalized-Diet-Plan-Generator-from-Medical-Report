@@ -221,7 +221,7 @@ if submit:
         "name": name
     })
 
-    # -------- GLOBAL SUCCESS MESSAGE --------
+    # -------- GLOBAL SUCCESS MESSAGEee --------
     st.success(
         "✅ Your AI Diet Report is Ready! "
         "Please check the Health Analysis, Meal Plan, and Report tabs."
