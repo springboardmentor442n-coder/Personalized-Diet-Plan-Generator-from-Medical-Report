@@ -17,6 +17,28 @@ AI-based Personalized Diet Plan Generator from Medical Reports.
 - ReportLab (PDF export)
 
 ## How to Run
-```bash
+```backend
+cd backend
 pip install -r requirements.txt
+uvicorn app:app --reload
+```frontend
+cd frontend
 streamlit run app.py
+
+
+## Project Structure
+
+Personalized-Diet-Plan-Generator-from-Medical-Report/
+
+│
+├── backend/
+│   ├── app.py
+│   ├── analysis.py
+│   ├── ocr.py
+│   └── ...
+│
+├── frontend/
+│   └── app.py
+│
+├── README.md
+└── requirements.txt
