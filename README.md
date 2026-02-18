@@ -32,10 +32,13 @@ Personalized-Diet-Plan-Generator-from-Medical-Report/
 
 │
 ├── backend/
-│   ├── app.py
 │   ├── analysis.py
-│   ├── ocr.py
-│   └── ...
+│   ├── config.py
+│   ├── diet_generator.py
+    ├── extraction.py
+    ├── main.py
+    ├── ocr.py
+│   └── rag_chart.py
 │
 ├── frontend/
 │   └── app.py
