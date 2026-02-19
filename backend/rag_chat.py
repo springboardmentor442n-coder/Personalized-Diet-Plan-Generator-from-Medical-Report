@@ -1,19 +1,17 @@
 import chromadb
 from chromadb.utils import embedding_functions
-from sentence_transformers import SentenceTransformer
 from groq import Groq
 import os
-import uuid
 
-# Initialize Groq
+# ---------------- INITIALIZE GROQ ----------------
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# Initialize embedding model
+# ---------------- EMBEDDING MODEL ----------------
 embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
     model_name="all-MiniLM-L6-v2"
 )
 
-# Initialize ChromaDB
+# ---------------- CHROMA DB ----------------
 chroma_client = chromadb.Client()
 
 collection = chroma_client.get_or_create_collection(
@@ -24,11 +22,14 @@ collection = chroma_client.get_or_create_collection(
 
 class RAGChat:
 
+    # ------------------------------------------------
+    # Add report + diet context (only once per session)
+    # ------------------------------------------------
     def add_context(self, session_id: str, report_text: str, diet_plan: str):
 
         documents = [
-            f"Medical Report:\n{report_text}",
-            f"Diet Plan:\n{diet_plan}"
+            report_text[:3000],   # limit report size
+            diet_plan[:2000]      # limit diet size
         ]
 
         ids = [
@@ -47,19 +48,26 @@ class RAGChat:
             ids=ids
         )
 
+    # ------------------------------------------------
+    # Retrieve only relevant small context
+    # ------------------------------------------------
     def query_context(self, session_id: str, query: str):
 
         results = collection.query(
             query_texts=[query],
-            n_results=2,
+            n_results=1,  # reduce token usage
             where={"session_id": session_id}
         )
 
         if results and results["documents"]:
-            return "\n\n".join(results["documents"][0])
+            context = results["documents"][0][0]
+            return context[:1500]  # truncate context
 
         return ""
 
+    # ------------------------------------------------
+    # Chat with optimized prompt
+    # ------------------------------------------------
     def chat(self, session_id: str, user_message: str):
 
         context = self.query_context(session_id, user_message)
@@ -67,26 +75,34 @@ class RAGChat:
         prompt = f"""
 You are a medical nutrition assistant.
 
-Use the following context to answer:
+Use the context below if relevant.
+If not relevant, answer generally but safely.
 
+Context:
 {context}
 
-User question:
+Question:
 {user_message}
 
-Answer clearly and safely.
+Give short, clear, safe answer (max 5-6 sentences).
 """
 
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {"role": "system", "content": "You are a helpful medical assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.6
-        )
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.1-8b-instant",  # correct model name
+                messages=[
+                    {"role": "system", "content": "You are a professional medical nutrition assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=300,      # reduced tokens
+                temperature=0.5      # stable answers
+            )
 
-        return response.choices[0].message.content.strip()
+            return response.choices[0].message.content.strip()
+
+        except Exception as e:
+            return "⚠️ AI service temporarily unavailable. Please try again later."
 
 
+# Create global instance
 rag_chat = RAGChat()

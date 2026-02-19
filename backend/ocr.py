@@ -6,6 +6,7 @@ import io
 import base64
 from groq import Groq
 from config import settings
+from PyPDF2 import PdfReader
 
 # Initialize Groq client
 client = Groq(api_key=settings.GROQ_API_KEY)
@@ -20,7 +21,7 @@ Return only plain text.
 """
 
 # ---------------------------------------------------
-# LOAD DOCUMENT
+# LOAD DOCUMENT (FOR OCR FALLBACK)
 # ---------------------------------------------------
 def load_document(file_path: str) -> List[Image.Image]:
 
@@ -31,10 +32,10 @@ def load_document(file_path: str) -> List[Image.Image]:
         pdf = pdfium.PdfDocument(file_path)
         images = []
 
-        # ⚡ Optimization 1: Reduce DPI (100 instead of 300)
-        for i in range(min(1, len(pdf))):  # ⚡ Optimization 2: First page only
+        # Process only first page for speed
+        for i in range(min(1, len(pdf))):
             page = pdf[i]
-            bitmap = page.render(scale=100/72)  # reduced resolution
+            bitmap = page.render(scale=100 / 72)  # reduced resolution
             pil_image = bitmap.to_pil()
             images.append(pil_image)
             page.close()
@@ -49,7 +50,7 @@ def load_document(file_path: str) -> List[Image.Image]:
 
 
 # ---------------------------------------------------
-# ENCODE IMAGE
+# ENCODE IMAGE FOR GROQ
 # ---------------------------------------------------
 def encode_pil_image(image: Image.Image) -> str:
 
@@ -58,14 +59,13 @@ def encode_pil_image(image: Image.Image) -> str:
     if image.mode != "RGB":
         image = image.convert("RGB")
 
-    # ⚡ Optimization 3: Slightly lower quality
-    image.save(buffer, format="JPEG", quality=85)
+    image.save(buffer, format="JPEG", quality=70)  # lower quality for speed
 
     return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
 # ---------------------------------------------------
-# CALL GROQ VISION
+# CALL GROQ VISION OCR
 # ---------------------------------------------------
 def get_markdown_from_page(image: Image.Image) -> str:
 
@@ -87,8 +87,7 @@ def get_markdown_from_page(image: Image.Image) -> str:
                 ]
             }
         ],
-        # ⚡ Optimization 4: Limit response size
-        max_tokens=1500,
+        max_tokens=800,  # reduced for speed
         temperature=0.1
     )
 
@@ -96,15 +95,40 @@ def get_markdown_from_page(image: Image.Image) -> str:
 
 
 # ---------------------------------------------------
-# MAIN PROCESSOR
+# MAIN DOCUMENT PROCESSOR
 # ---------------------------------------------------
 def process_document(file_path: str) -> str:
+
+    # -----------------------------
+    # STEP 1: Try Direct PDF Extraction
+    # -----------------------------
+    try:
+        if file_path.lower().endswith(".pdf"):
+            reader = PdfReader(file_path)
+            text = ""
+
+            for page in reader.pages:
+                extracted = page.extract_text()
+                if extracted:
+                    text += extracted + "\n"
+
+            if text.strip():
+                print("✅ Using direct PDF text extraction.")
+                return text
+
+    except Exception as e:
+        print("Direct PDF extraction failed:", e)
+
+    # -----------------------------
+    # STEP 2: Fallback to Vision OCR
+    # -----------------------------
+    print("⚠️ Falling back to Vision OCR...")
 
     images = load_document(file_path)
     pages_text = []
 
     for i, image in enumerate(images):
-        print(f"Processing page {i+1}...")
+        print(f"Processing page {i+1} with OCR...")
         text = get_markdown_from_page(image)
         pages_text.append(text)
 

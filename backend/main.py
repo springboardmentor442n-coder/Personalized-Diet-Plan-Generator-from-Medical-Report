@@ -38,6 +38,10 @@ async def analyze_report(file: UploadFile = File(...),
 
         # 1️⃣ OCR
         extracted_text = process_document(temp_path)
+        print("----- OCR TEXT START -----")
+        print(extracted_text)
+        print("----- OCR TEXT END -----")
+
 
         # 2️⃣ Extract lab values
         labs = extract_lab_values(extracted_text)
