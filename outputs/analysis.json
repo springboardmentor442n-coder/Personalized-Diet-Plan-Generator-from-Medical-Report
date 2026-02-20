@@ -1,0 +1,11 @@
+{
+    "diabetes": "Pre-Diabetes",
+    "cholesterol": "High",
+    "vitamin_d": "Deficient",
+    "sugar_level": "Prediabetes",
+    "hdl_status": "Low",
+    "ldl_status": "High",
+    "thyroid": "Hypothyroid",
+    "hemoglobin": "Low (Anemia Risk)",
+    "triglycerides_status": "High"
+}

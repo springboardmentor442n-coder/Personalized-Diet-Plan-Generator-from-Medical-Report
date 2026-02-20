@@ -1,0 +1,103 @@
+{
+    "plan": {
+        "breakfast": {
+            "meal": "Oatmeal with Banana and Honey",
+            "ingredients": [
+                "oats",
+                "banana",
+                "honey"
+            ],
+            "calories": 250,
+            "cost": 50,
+            "nutritional_info": {
+                "carbohydrates": 40,
+                "protein": 5,
+                "fat": 2
+            }
+        },
+        "lunch": {
+            "meal": "Vegetable Brown Rice Bowl",
+            "ingredients": [
+                "brown rice",
+                "mixed vegetables",
+                "soybean"
+            ],
+            "calories": 400,
+            "cost": 75,
+            "nutritional_info": {
+                "carbohydrates": 60,
+                "protein": 15,
+                "fat": 5
+            }
+        },
+        "snacks": [
+            {
+                "snack": "Fresh Fruit Salad",
+                "ingredients": [
+                    "apple",
+                    "orange",
+                    "grapes"
+                ],
+                "calories": 100,
+                "cost": 20,
+                "nutritional_info": {
+                    "carbohydrates": 25,
+                    "protein": 2,
+                    "fat": 0
+                }
+            },
+            {
+                "snack": "Roasted Chana",
+                "ingredients": [
+                    "chickpeas"
+                ],
+                "calories": 120,
+                "cost": 30,
+                "nutritional_info": {
+                    "carbohydrates": 20,
+                    "protein": 5,
+                    "fat": 2
+                }
+            }
+        ],
+        "dinner": {
+            "meal": "Vegetable Whole Wheat Roti with Dal",
+            "ingredients": [
+                "whole wheat roti",
+                "mixed vegetables",
+                "lentils"
+            ],
+            "calories": 450,
+            "cost": 80,
+            "nutritional_info": {
+                "carbohydrates": 60,
+                "protein": 15,
+                "fat": 5
+            }
+        },
+        "exercises": [
+            {
+                "exercise": "Brisk Walking",
+                "duration": 30,
+                "calories_burned": 150
+            },
+            {
+                "exercise": "Yoga",
+                "duration": 45,
+                "calories_burned": 100
+            }
+        ],
+        "daily_routine": {
+            "wake_up_time": "6:00 AM",
+            "bed_time": "10:00 PM",
+            "hydration": "8 glasses"
+        },
+        "budget_friendly_tips": [
+            "Buy ingredients in bulk",
+            "Plan meals around seasonal vegetables",
+            "Use herbs and spices for flavor instead of expensive sauces"
+        ]
+    },
+    "total_cost": 235,
+    "total_calories": 1200
+}
