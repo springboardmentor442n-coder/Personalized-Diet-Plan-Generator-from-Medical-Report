@@ -1,0 +1,5 @@
+{
+  "name": "AI Nutricare",
+  "description": "AI-powered medical lab report analyzer providing health scores and detailed insights.",
+  "requestFramePermissions": []
+}

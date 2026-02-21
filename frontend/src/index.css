@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", sans-serif;
+  
+  --color-medical-50: #f0f7ff;
+  --color-medical-100: #e0effe;
+  --color-medical-200: #bae0fd;
+  --color-medical-500: #3b82f6;
+  --color-medical-600: #2563eb;
+  --color-medical-700: #1d4ed8;
+  
+  --color-severity-normal: #10b981;
+  --color-severity-mild: #f59e0b;
+  --color-severity-moderate: #f97316;
+  --color-severity-critical: #ef4444;
+
+  --shadow-startup: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-startup-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-body antialiased transition-colors duration-300;
+  }
+  
+  /* Explicit dark mode overrides for class-based toggling */
+  html.dark, .dark body, .dark #root, .dark .bg-dot-pattern {
+    background-color: #0B0F1A !important;
+    color: #f1f5f9 !important;
+  }
+
+  .dark .bg-dot-pattern {
+    background-image: radial-gradient(#1e293b 1px, transparent 1px) !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .medical-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  .bg-dot-pattern {
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-attachment: fixed;
+    background-color: #f8fafc;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-startup transition-all duration-300;
+  }
+  
+  .dark .glass-card {
+    @apply bg-slate-900/40 border-slate-800/50 shadow-none;
+  }
+
+  .startup-card {
+    @apply bg-white border border-slate-200/60 rounded-3xl p-8 shadow-startup hover:shadow-startup-hover transition-all duration-300;
+  }
+
+  .dark .startup-card {
+    @apply bg-slate-900 border-slate-800/60 shadow-none;
+  }
+  
+  /* Force dark mode colors for specific components if dark: utilities fail */
+  .dark .bg-white { background-color: #0f172a !important; }
+  .dark .text-slate-900 { color: #f8fafc !important; }
+  .dark .text-slate-800 { color: #f1f5f9 !important; }
+  .dark .text-slate-500 { color: #94a3b8 !important; }
+  .dark .border-slate-200 { border-color: #1e293b !important; }
+}
+
