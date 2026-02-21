@@ -159,9 +159,3 @@ Ready for further enhancements such as:
 - Proper JSON formatting
 - Clean section separation
 - Professional evaluation-ready layout
-
-Now when you switch to **Preview**, everything will render correctly.
-
-This version is internship-review safe 💼✨
-
-If you want, I can also help you add a clean “Engineering Decisions” section — that impresses evaluators a lot.
