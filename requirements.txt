@@ -1,0 +1,13 @@
+streamlit
+pandas
+numpy
+pdfplumber
+pytesseract
+opencv-python-headless
+scikit-learn
+sentence-transformers
+chromadb
+langchain
+langchain-community
+langchain-groq
+python-dotenv
