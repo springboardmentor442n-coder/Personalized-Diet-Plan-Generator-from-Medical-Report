@@ -425,4 +425,5 @@ if __name__ == '__main__':
     print("💡 Smart Chat: Chatbot knows about your personalized diet plan")
     print("=" * 80)
     
+
     app.run(host='0.0.0.0', port=5000, debug=True)
