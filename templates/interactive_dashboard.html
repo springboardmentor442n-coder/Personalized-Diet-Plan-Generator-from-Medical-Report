@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-NutriCare: Interactive Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --light-bg: #f8f9fa;
+            --shadow-soft: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-strong: 0 20px 60px rgba(0,0,0,0.2);
+            --border-radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .hero-section {
+            padding: 4rem 0 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .step-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-strong);
+            margin: 2rem 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        .step-card.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+        }
+
+        .step-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-content {
+            padding: 3rem;
+        }
+
+        .upload-zone {
+            border: 3px dashed #007bff;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+        }
+
+        .upload-zone:hover {
+            border-color: #0056b3;
+            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+            transform: scale(1.02);
+        }
+
+        .upload-zone.dragover {
+            border-color: #28a745;
+            background: linear-gradient(45deg, #e8f5e8, #c8e6c9);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+
+        .btn-gradient {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            color: white;
+        }
+
+        .btn-success-gradient {
+            background: var(--success-gradient);
+        }
+
+        .btn-warning-gradient {
+            background: var(--warning-gradient);
+        }
+
+        .processing-animation {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner-custom {
+            width: 80px;
+            height: 80px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar-custom {
+            background: var(--primary-gradient);
+            height: 10px;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .file-info {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .analysis-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .diet-plan-container {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .diet-plan-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .diet-plan-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .diet-plan-container::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        .day-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: none;
+            border-radius: 15px;
+            margin: 1rem 0;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .day-header {
+            background: var(--success-gradient);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .meal-item {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 0 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .meal-item:hover {
+            background: #e3f2fd;
+            border-left-color: #0056b3;
+            transform: translateX(5px);
+        }
+
+        .chat-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: var(--warning-gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .chat-modal .modal-dialog {
+            max-width: 600px;
+        }
+
+        .chat-container {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8f9fa;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+
+        .chat-message {
+            margin: 1rem 0;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .user-message {
+            text-align: right;
+        }
+
+        .user-message .message-text {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 20px 20px 5px 20px;
+            display: inline-block;
+            max-width: 80%;
+        }
+
+        .bot-message .message-text {
+            background: white;
+            color: #333;
+            padding: 1rem 1.5rem;
+            border-radius: 20px 20px 20px 5px;
+            display: inline-block;
+            max-width: 80%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .chat-input {
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .quick-questions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .quick-btn {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .slide-in {
+            animation: slideIn 0.8s ease;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading-text {
+            color: #666;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .success-checkmark {
+            color: #28a745;
+            font-size: 3rem;
+            animation: bounce 1s ease infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-strong);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .step-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-button {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title animate__animated animate__fadeInDown">
+                <i class="fas fa-apple-alt"></i> AI-NutriCare
+            </h1>
+            <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s">
+                Intelligent Medical Report Analysis & Personalized Nutrition Planning
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="step-container">
+            <!-- File Upload -->
+            <div id="step1" class="step-card active fade-in">
+                <div class="step-header">
+                    <h3><i class="fas fa-cloud-upload-alt"></i> Upload Medical Report</h3>
+                    <p class="mb-0">Upload your medical report for AI analysis</p>
+                </div>
+                <div class="step-content">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-content">
+                            <i class="fas fa-file-medical upload-icon"></i>
+                            <h5>Drop your medical report here</h5>
+                            <p class="text-muted">or click to browse files</p>
+                            <small class="text-muted">Supports: PDF, PNG, JPG, JPEG (Max 16MB)</small>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf,.png,.jpg,.jpeg">
+                    
+                    <div id="fileSelected" class="file-info hidden">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <div>
+                                <strong>File Selected:</strong> <span id="fileName"></span><br>
+                                <small class="text-muted">Size: <span id="fileSize"></span> | Type: <span id="fileType"></span></small>
+                            </div>
+                        </div>
+                        <button class="btn btn-gradient mt-3" onclick="processFile()">
+                            <i class="fas fa-cogs"></i> Process Medical Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing -->
+            <div id="step2" class="step-card hidden">
+                <div class="step-header">
+                    <h3><i class="fas fa-brain"></i> AI Analysis in Progress</h3>
+                    <p class="mb-0">Extracting health insights from your report</p>
+                </div>
+                <div class="step-content">
+                    <div class="processing-animation">
+                        <div class="spinner-custom"></div>
+                        <h5 class="loading-text">Analyzing medical report...</h5>
+                        <div class="progress mt-3">
+                            <div class="progress-bar progress-bar-custom" id="progressBar" style="width: 0%"></div>
+                        </div>
+                        <p class="text-muted mt-2" id="progressText">Initializing AI analysis...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Results & Generate Plan -->
+            <div id="step3" class="step-card hidden">
+                <div class="step-header">
+                    <h3><i class="fas fa-chart-line"></i> Analysis Complete</h3>
+                    <p class="mb-0">Review extracted health data and generate your plan</p>
+                </div>
+                <div class="step-content">
+                    <div id="analysisResults">
+                        <!-- Analysis results will be populated here -->
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="fas fa-user"></i> Age (Optional)</label>
+                            <input type="number" class="form-control" id="patientAge" placeholder="Enter age (default: 30)" min="1" max="120">
+                            <small class="text-muted">Leave blank to use default age</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="fas fa-leaf"></i> Diet Preference (Optional)</label>
+                            <select class="form-select" id="dietPreference">
+                                <option value="">Auto-select (default: vegetarian)</option>
+                                <option value="vegetarian">Vegetarian</option>
+                                <option value="non-vegetarian">Non-Vegetarian</option>
+                            </select>
+                            <small class="text-muted">Leave blank for automatic selection</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="fas fa-calendar-alt"></i> Number of Days</label>
+                            <select class="form-select" id="planDays">
+                                <option value="3">3 Days Plan</option>
+                                <option value="5">5 Days Plan</option>
+                                <option value="7" selected>7 Days Plan</option>
+                                <option value="10">10 Days Plan</option>
+                                <option value="14">14 Days Plan</option>
+                            </select>
+                            <small class="text-muted">Choose your plan duration</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label class="form-label"><i class="fas fa-bullseye"></i> Health Goals</label>
+                            <select class="form-select" id="healthGoals" multiple>
+                                <option value="weight_loss">Weight Loss</option>
+                                <option value="weight_gain">Weight Gain</option>
+                                <option value="muscle_gain">Muscle Building</option>
+                                <option value="heart_health">Heart Health</option>
+                                <option value="diabetes_management">Diabetes Management</option>
+                                <option value="general_wellness" selected>General Wellness</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-success-gradient btn-lg" onclick="generateDietPlan()">
+                            <i class="fas fa-magic"></i> Generate Personalized Diet Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Personalized Diet Plan -->
+            <div id="step4" class="step-card hidden">
+                <div class="step-header">
+                    <h3><i class="fas fa-calendar-week"></i> Your Personalized Diet Plan</h3>
+                    <p class="mb-0">AI-generated nutrition plan tailored to your health profile</p>
+                </div>
+                <div class="step-content">
+                    <div id="dietPlanLoading" class="processing-animation">
+                        <div class="spinner-custom"></div>
+                        <h5 class="loading-text">Generating your personalized diet plan...</h5>
+                        <p class="text-muted">Creating meals optimized for your health profile</p>
+                    </div>
+                    
+                    <div id="dietPlanResults" class="hidden">
+                        <!-- Diet plan results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Chat Button -->
+    <div class="chat-button" onclick="openChat()" title="Ask Nutrition Questions">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <!-- Chat Modal -->
+    <div class="modal fade" id="chatModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--primary-gradient); color: white;">
+                    <h5 class="modal-title">
+                        <i class="fas fa-robot"></i> AI Nutrition Expert
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="chat-message bot-message">
+                                <div class="message-text">
+                                    <i class="fas fa-robot text-primary"></i>
+                                    Hello! I'm your AI nutrition expert. I can help with weight management, diabetes nutrition, protein sources, vitamins, meal planning, and much more. What would you like to know?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <div class="quick-questions">
+                                <button class="quick-btn" onclick="sendQuickMessage('what should I eat today?')">Today's Meals</button>
+                                <button class="quick-btn" onclick="sendQuickMessage('my nutrition targets')">My Targets</button>
+                                <button class="quick-btn" onclick="sendQuickMessage('shopping list')">Shopping List</button>
+                                <button class="quick-btn" onclick="sendQuickMessage('weight loss tips')">Weight Loss</button>
+                                <button class="quick-btn" onclick="sendQuickMessage('protein sources')">Protein</button>
+                                <button class="quick-btn" onclick="sendQuickMessage('heart healthy foods')">Heart Health</button>
+                            </div>
+                            <form id="chatForm">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="chatInput" placeholder="Ask your nutrition question..." required>
+                                    <button type="submit" class="btn btn-gradient">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentFile = null;
+        let analysisData = null;
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+        
+        function initializeApp() {
+            // File upload functionality
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            
+            uploadZone.addEventListener('click', () => fileInput.click());
+            uploadZone.addEventListener('dragover', handleDragOver);
+            uploadZone.addEventListener('dragleave', handleDragLeave);
+            uploadZone.addEventListener('drop', handleDrop);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Chat functionality
+            document.getElementById('chatForm').addEventListener('submit', handleChatSubmit);
+        }
+        
+        // File upload handlers
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+        
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+        
+        function handleFileSelect(e) {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        }
+        
+        function handleFile(file) {
+            if (!isValidFile(file)) {
+                showNotification('Please select a valid file (PDF, PNG, JPG, JPEG)', 'error');
+                return;
+            }
+            
+            currentFile = file;
+            displayFileInfo(file);
+        }
+        
+        function isValidFile(file) {
+            const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+            return allowedTypes.includes(file.type) && file.size <= 16 * 1024 * 1024;
+        }
+        
+        function displayFileInfo(file) {
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = (file.size / (1024*1024)).toFixed(2) + ' MB';
+            document.getElementById('fileType').textContent = file.type.split('/')[1].toUpperCase();
+            document.getElementById('fileSelected').classList.remove('hidden');
+        }
+        
+        async function processFile() {
+            if (!currentFile) return;
+            
+            // Show processing step
+            showStep(2);
+            
+            // Simulate processing with progress
+            await simulateProgress();
+            
+            // Process file
+            const formData = new FormData();
+            formData.append('medical_report', currentFile);
+            
+            try {
+                const response = await fetch('/api/process_file', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    analysisData = result.analysis;
+                    displayAnalysisResults(result.analysis);
+                    showStep(3);
+                    showNotification('Medical report processed successfully!', 'success');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                showNotification('Error processing file: ' + error.message, 'error');
+                showStep(1);
+            }
+        }
+        
+        async function simulateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            const steps = [
+                { progress: 20, text: 'Reading file structure...' },
+                { progress: 40, text: 'Extracting text content...' },
+                { progress: 60, text: 'Analyzing health metrics...' },
+                { progress: 80, text: 'Processing AI insights...' },
+                { progress: 100, text: 'Analysis complete!' }
+            ];
+            
+            for (let step of steps) {
+                progressBar.style.width = step.progress + '%';
+                progressText.textContent = step.text;
+                await new Promise(resolve => setTimeout(resolve, 400));
+            }
+        }
+        
+        function displayAnalysisResults(analysis) {
+            const resultsContainer = document.getElementById('analysisResults');
+            
+            const html = `
+                <div class="analysis-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="success-checkmark me-3">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">Medical Report Analysis Complete</h5>
+                            <p class="mb-0 opacity-75">File: ${analysis.file_name} (${analysis.file_size})</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h6 class="text-primary"><i class="fas fa-heartbeat"></i> Health Metrics</h6>
+                        <ul class="list-unstyled mb-0">
+                            ${analysis.extracted_data.health_metrics ? Object.entries(analysis.extracted_data.health_metrics).map(([key, value]) => 
+                                `<li><strong>${key.replace('_', ' ').toUpperCase()}:</strong> ${value}</li>`
+                            ).join('') : '<li>No specific metrics detected</li>'}
+                        </ul>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h6 class="text-success"><i class="fas fa-shield-alt"></i> Health Status</h6>
+                        <ul class="list-unstyled mb-0">
+                            ${analysis.extracted_data.health_conditions && Array.isArray(analysis.extracted_data.health_conditions) ? 
+                                analysis.extracted_data.health_conditions.map(condition => 
+                                    `<li><i class="fas fa-check text-success"></i> ${condition}</li>`
+                                ).join('') : '<li>No specific conditions detected</li>'}
+                        </ul>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h6 class="text-warning"><i class="fas fa-exclamation-triangle"></i> Allergies</h6>
+                        <ul class="list-unstyled mb-0">
+                            ${analysis.extracted_data.allergies && Array.isArray(analysis.extracted_data.allergies) ? 
+                                analysis.extracted_data.allergies.map(allergy => 
+                                    `<li><i class="fas fa-info-circle text-info"></i> ${allergy}</li>`
+                                ).join('') : '<li>No known allergies detected</li>'}
+                        </ul>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h6 class="text-info"><i class="fas fa-pills"></i> Current Medications</h6>
+                        <ul class="list-unstyled mb-0">
+                            ${analysis.extracted_data.current_medications && Array.isArray(analysis.extracted_data.current_medications) ? 
+                                analysis.extracted_data.current_medications.map(med => 
+                                    `<li><i class="fas fa-pill text-primary"></i> ${med}</li>`
+                                ).join('') : '<li>No current medications detected</li>'}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="analysis-card mt-3">
+                    <h6><i class="fas fa-robot"></i> AI Nutrition Insights</h6>
+                    <p><strong>Focus:</strong> ${analysis.extracted_data.ai_insights?.nutrition_focus || 'General wellness nutrition'}</p>
+                    <p><strong>Risk Level:</strong> ${analysis.extracted_data.ai_insights?.risk_factors || 'Assessment needed'}</p>
+                    <p><strong>Diet Suitability:</strong> ${analysis.extracted_data.ai_insights?.diet_suitability || 'Suitable for standard diets'}</p>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = html;
+        }
+        
+        async function generateDietPlan() {
+            // Get optional values with defaults
+            const age = document.getElementById('patientAge').value || 30;
+            const dietPreference = document.getElementById('dietPreference').value || 'vegetarian';
+            const healthGoals = Array.from(document.getElementById('healthGoals').selectedOptions).map(option => option.value);
+            const planDays = document.getElementById('planDays').value || 7;
+            
+            showStep(4);
+            
+            try {
+                const response = await fetch('/api/generate_plan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        age: parseInt(age),
+                        diet_preference: dietPreference,
+                        health_goals: healthGoals,
+                        plan_days: parseInt(planDays)
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayDietPlan(result.diet_plan);
+                    showNotification(`${planDays}-day personalized diet plan generated successfully!`, 'success');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                showNotification('Error generating diet plan: ' + error.message, 'error');
+            }
+        }
+        
+        function displayDietPlan(plan) {
+            document.getElementById('dietPlanLoading').classList.add('hidden');
+            const resultsContainer = document.getElementById('dietPlanResults');
+            
+            let dietPlanHtml = `
+                <div class="analysis-card mb-4">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5><i class="fas fa-user-md"></i> Patient Profile</h5>
+                            <p><strong>Age:</strong> ${plan.patient_profile?.age || 'N/A'} | 
+                               <strong>Diet:</strong> ${plan.patient_profile?.diet_preference || 'N/A'} | 
+                               <strong>Focus:</strong> ${plan.patient_profile?.nutrition_focus || 'Balanced nutrition'}</p>
+                            <p><strong>Target Calories:</strong> ${plan.patient_profile?.calorie_target || 'Calculated based on profile'}</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <small class="text-light">Generated: ${plan.generation_info?.timestamp || new Date().toLocaleString()}</small><br>
+                            <small class="text-light">Processing: ${plan.generation_info?.processing_time || 'N/A'}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="analysis-card">
+                            <h6><i class="fas fa-bullseye"></i> Nutrition Targets</h6>
+                            <ul class="list-unstyled mb-0 small">
+                                <li><strong>Protein:</strong> ${plan.nutrition_targets?.protein || 'N/A'}</li>
+                                <li><strong>Carbs:</strong> ${plan.nutrition_targets?.carbohydrates || 'N/A'}</li>
+                                <li><strong>Fats:</strong> ${plan.nutrition_targets?.fats || 'N/A'}</li>
+                                <li><strong>Fiber:</strong> ${plan.nutrition_targets?.fiber || 'N/A'}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="analysis-card">
+                            <h6><i class="fas fa-lightbulb"></i> Key Recommendations</h6>
+                            <ul class="list-unstyled mb-0 small">
+                                ${plan.health_analysis?.key_recommendations ? 
+                                    plan.health_analysis.key_recommendations.slice(0, 3).map(rec => `<li><i class="fas fa-check text-success"></i> ${rec}</li>`).join('') 
+                                    : '<li>Maintain balanced nutrition</li>'}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mb-4"><i class="fas fa-calendar-week text-success"></i> Your ${plan.patient_profile?.plan_days || Object.keys(plan.diet_plan || {}).length || 7}-Day Meal Plan</h5>
+                <div class="diet-plan-container">
+            `;
+            
+            // Extract daily meal plans from diet_plan object
+            const dietPlanData = plan.diet_plan || {};
+            const dailyPlans = {};
+            
+            // Look for keys that start with "Day " (e.g., "Day 1", "Day 2")
+            Object.keys(dietPlanData).forEach(key => {
+                if (key.startsWith('Day ')) {
+                    dailyPlans[key] = dietPlanData[key];
+                }
+            });
+            
+            // If no diet plan data found, show error message
+            if (Object.keys(dailyPlans).length === 0) {
+                dietPlanHtml += `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        No diet plan data found. Please try generating the plan again.
+                    </div>
+                `;
+            } else {
+                // Sort days numerically (Day 1, Day 2, Day 3, etc.)
+                const sortedDays = Object.keys(dailyPlans).sort((a, b) => {
+                    const dayA = parseInt(a.replace('Day ', ''));
+                    const dayB = parseInt(b.replace('Day ', ''));
+                    return dayA - dayB;
+                });
+                
+                // Display each day's meal plan in proper order
+                sortedDays.forEach(dayKey => {
+                    const meals = dailyPlans[dayKey];
+                    const dayNumber = dayKey.replace('Day ', '');
+                    
+                    dietPlanHtml += `
+                        <div class="day-card">
+                            <div class="day-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-calendar-day"></i> ${dayKey}</span>
+                                    <span class="badge bg-light text-primary">${meals.theme || 'Balanced Nutrition'}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                ${Object.entries(meals).filter(([key]) => !['theme', 'daily_total', 'hydration'].includes(key)).map(([mealType, mealData]) => `
+                                    <div class="meal-item">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong class="text-primary">${mealType.charAt(0).toUpperCase() + mealType.slice(1)}:</strong>
+                                                <div class="mt-1">${typeof mealData === 'object' && mealData.name ? mealData.name : mealData}</div>
+                                                ${typeof mealData === 'object' && mealData.calories ? `<small class="text-muted">(${mealData.calories} kcal)</small>` : ''}
+                                            </div>
+                                            <i class="fas fa-utensils text-muted"></i>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                <div class="row mt-3 pt-3 border-top">
+                                    <div class="col-6">
+                                        <small><strong>Daily Total:</strong> ${meals.daily_total || 'N/A'}</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <small><strong>Hydration:</strong> ${meals.hydration || 'N/A'}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            dietPlanHtml += `
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button class="btn btn-warning-gradient me-3" onclick="downloadPlan()">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                    <button class="btn btn-gradient me-3" onclick="regeneratePlan()">
+                        <i class="fas fa-redo"></i> Generate Different Plan
+                    </button>
+                    <button class="btn btn-success-gradient" onclick="openChat()">
+                        <i class="fas fa-comments"></i> Ask Diet Questions
+                    </button>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = dietPlanHtml;
+            resultsContainer.classList.remove('hidden');
+        }
+        
+        function showStep(stepNumber) {
+            // Hide all steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).classList.add('hidden');
+                document.getElementById(`step${i}`).classList.remove('active');
+            }
+            
+            // Show target step with animation
+            const targetStep = document.getElementById(`step${stepNumber}`);
+            setTimeout(() => {
+                targetStep.classList.remove('hidden');
+                setTimeout(() => targetStep.classList.add('active'), 100);
+            }, 300);
+        }
+        
+        // Chat functionality
+        function openChat() {
+            const chatModal = new bootstrap.Modal(document.getElementById('chatModal'));
+            chatModal.show();
+        }
+        
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            try {
+                const response = await fetch('/api/chat_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    addChatMessage(result.response, 'bot');
+                } else {
+                    addChatMessage('Sorry, there was an error processing your message.', 'bot');
+                }
+            } catch (error) {
+                addChatMessage('Sorry, there was a connection error.', 'bot');
+            }
+        }
+        
+        function sendQuickMessage(message) {
+            document.getElementById('chatInput').value = message;
+            document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+        }
+        
+        function addChatMessage(message, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}-message`;
+            
+            const messageText = document.createElement('div');
+            messageText.className = 'message-text';
+            
+            if (sender === 'user') {
+                messageText.innerHTML = message;
+            } else {
+                messageText.innerHTML = `<i class="fas fa-robot text-primary"></i> ${message}`;
+            }
+            
+            messageDiv.appendChild(messageText);
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Utility functions
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 4000);
+        }
+        
+        function downloadPlan() {
+            showNotification('PDF download feature coming soon!', 'success');
+        }
+        
+        function regeneratePlan() {
+            if (confirm('Generate a different diet plan with alternative meal options?')) {
+                showNotification('Generating a new diet plan with different meal options...', 'success');
+                
+                // Get current form values
+                const age = document.getElementById('patientAge').value || 30;
+                const dietPreference = document.getElementById('dietPreference').value || 'vegetarian';
+                const healthGoals = Array.from(document.getElementById('healthGoals').selectedOptions).map(option => option.value);
+                const planDays = document.getElementById('planDays').value || 7;
+                
+                // Add variation to get different meals
+                const variationOffset = Math.floor(Math.random() * 3) + 1; // Random offset 1-3
+                
+                showStep(4);
+                
+                // Make API call with variation parameter
+                fetch('/api/generate_plan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        age: parseInt(age),
+                        diet_preference: dietPreference,
+                        health_goals: healthGoals,
+                        plan_days: parseInt(planDays),
+                        variation_offset: variationOffset
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        displayDietPlan(result.diet_plan);
+                        showNotification(`${planDays}-day alternative diet plan generated successfully!`, 'success');
+                    } else {
+                        throw new Error(result.error);
+                    }
+                })
+                .catch(error => {
+                    showNotification('Error generating alternative plan: ' + error.message, 'error');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

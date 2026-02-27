@@ -1,0 +1,112 @@
+[
+  {
+    "topic": "BMI Normal Range",
+    "content": "A normal BMI range is 18.5-24.9. BMI below 18.5 is underweight, 25-29.9 is overweight, and 30+ is obese. BMI is calculated as weight (kg) divided by height (m) squared.",
+    "category": "health_metrics"
+  },
+  {
+    "topic": "BMI Interpretation",
+    "content": "BMI limitations: doesn't distinguish muscle from fat, may not apply to athletes or elderly. Consider waist circumference and body composition for complete assessment.",
+    "category": "health_metrics"
+  },
+  {
+    "topic": "Blood Sugar Normal Range",
+    "content": "Normal fasting blood sugar: 70-100 mg/dL. Prediabetes: 100-125 mg/dL. Diabetes: 126+ mg/dL. Random blood sugar over 200 mg/dL with symptoms indicates diabetes.",
+    "category": "health_metrics"
+  },
+  {
+    "topic": "Blood Sugar Management",
+    "content": "Control blood sugar with: complex carbohydrates, fiber-rich foods, regular meals, portion control, limit refined sugars, include protein and healthy fats.",
+    "category": "health_metrics"
+  },
+  {
+    "topic": "Cholesterol Levels",
+    "content": "Total cholesterol: <200 mg/dL desirable, 200-239 borderline high, 240+ high. LDL: <100 optimal, HDL: 40+ men, 50+ women. Manage with omega-3s, fiber, limit saturated fats.",
+    "category": "health_metrics"
+  },
+  {
+    "topic": "Daily Calorie Needs",
+    "content": "Adult women: 1,600-2,400 calories/day. Adult men: 2,000-3,000 calories/day. Varies by age, activity level, height, weight. Sedentary adults need fewer calories.",
+    "category": "calories"
+  },
+  {
+    "topic": "Age-Based Calorie Needs",
+    "content": "Ages 19-30: Higher calorie needs. Ages 31-50: Moderate needs. Ages 51+: Lower needs due to slower metabolism. Adjust portions accordingly.",
+    "category": "calories"
+  },
+  {
+    "topic": "Macronutrient Balance",
+    "content": "Healthy macro distribution: 45-65% carbs, 10-35% protein, 20-35% fat. Adjust based on health conditions - diabetics may need lower carbs, athletes need more protein.",
+    "category": "macronutrients"
+  },
+  {
+    "topic": "Carbohydrate Guidelines",
+    "content": "Choose complex carbs: whole grains, vegetables, legumes. Limit simple sugars. For diabetes, count carbs and choose low glycemic index foods.",
+    "category": "macronutrients"
+  },
+  {
+    "topic": "Protein Requirements",
+    "content": "Adults need 0.8g protein per kg body weight. Athletes: 1.2-2.0g/kg. Older adults: 1.0-1.2g/kg. Complete proteins from eggs, dairy, meat, quinoa, soy.",
+    "category": "macronutrients"
+  },
+  {
+    "topic": "Vegetarian Protein Sources",
+    "content": "Excellent vegetarian proteins: lentils, chickpeas, quinoa, tofu, paneer, Greek yogurt, nuts, seeds. Combine legumes with grains for complete protein.",
+    "category": "vegetarian"
+  },
+  {
+    "topic": "Vegetarian Meal Ideas",
+    "content": "Vegetarian breakfast: oatmeal with nuts, vegetable upma, idli sambar. Lunch: quinoa bowls, dal rice, paneer curry. Dinner: vegetable khichdi, lentil soups.",
+    "category": "vegetarian"
+  },
+  {
+    "topic": "Lean Protein Sources",
+    "content": "Lean proteins: chicken breast, fish (salmon, tuna), eggs, turkey. Fish provides omega-3 fatty acids. Choose grilled, baked, or steamed over fried preparations.",
+    "category": "non_vegetarian"
+  },
+  {
+    "topic": "Meal Timing",
+    "content": "Eat every 3-4 hours. Don't skip breakfast. Have largest meal at lunch when metabolism is highest. Light dinner 2-3 hours before bed. Include healthy snacks.",
+    "category": "meal_timing"
+  },
+  {
+    "topic": "Healthy Food Swaps",
+    "content": "White rice → Brown rice/quinoa. White bread → Whole grain bread. Fried foods → Grilled/baked. Sugary drinks → Water/herbal tea. Refined oil → Olive oil.",
+    "category": "alternatives"
+  },
+  {
+    "topic": "Breakfast Alternatives",
+    "content": "Oatmeal alternatives: quinoa porridge, chia pudding, smoothie bowls. Bread alternatives: whole grain options, lettuce wraps, sweet potato slices.",
+    "category": "alternatives"
+  },
+  {
+    "topic": "Snack Alternatives",
+    "content": "Healthy snacks: nuts, fruits, Greek yogurt, hummus with vegetables, roasted chickpeas, homemade energy balls, vegetable soups.",
+    "category": "alternatives"
+  },
+  {
+    "topic": "Diabetes Diet",
+    "content": "Diabetes diet: Focus on low glycemic foods, count carbohydrates, eat regular meals, include fiber, limit sugars, choose lean proteins, monitor portions.",
+    "category": "conditions"
+  },
+  {
+    "topic": "Hypertension Diet",
+    "content": "High blood pressure diet: Reduce sodium, increase potassium (bananas, oranges), choose DASH diet, limit processed foods, include whole grains, lean proteins.",
+    "category": "conditions"
+  },
+  {
+    "topic": "Heart Health",
+    "content": "Heart-healthy diet: Omega-3 rich foods, limit saturated fats, include nuts, olive oil, fish, vegetables, fruits, whole grains. Avoid trans fats.",
+    "category": "conditions"
+  },
+  {
+    "topic": "Hydration Guidelines",
+    "content": "Drink 8-10 glasses of water daily. More if active or in hot weather. Signs of good hydration: pale yellow urine, no excessive thirst, good energy levels.",
+    "category": "hydration"
+  },
+  {
+    "topic": "Portion Control",
+    "content": "Use smaller plates, fill half with vegetables, quarter with protein, quarter with carbs. Use hand as guide: palm-sized protein, fist-sized vegetables, cupped-hand carbs.",
+    "category": "portions"
+  }
+]

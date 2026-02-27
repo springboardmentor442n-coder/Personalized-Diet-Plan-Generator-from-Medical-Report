@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Plan Results - AI-NutriCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container-fluid">
+        <header class="bg-primary text-white text-center py-3 mb-4">
+            <h1>🥗 AI-NutriCare - Results</h1>
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <a href="/" class="btn btn-light btn-sm me-2">← Back to Home</a>
+                    <a href="/chat" class="btn btn-info btn-sm me-2">💬 Open Chatbot</a>
+                    <a href="/download_json/{{ result.session_id }}" class="btn btn-success btn-sm">💾 Download JSON</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Patient Info Summary -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5>👤 Patient Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Age:</strong> {{ result.age }} years
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Diet Preference:</strong> {{ result.diet_preference.title() }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Generated:</strong> {{ result.timestamp[:19] }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Version:</strong> v{{ result.version }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Metrics -->
+        {% if result.metrics %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5>🩺 Extracted Health Metrics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            {% if result.metrics.blood_sugar %}
+                            <div class="col-md-4">
+                                <div class="metric-card bg-light p-3 rounded">
+                                    <div class="metric-value display-6">{{ result.metrics.blood_sugar }}</div>
+                                    <h6>Blood Sugar (mg/dL)</h6>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if result.metrics.bmi %}
+                            <div class="col-md-4">
+                                <div class="metric-card bg-light p-3 rounded">
+                                    <div class="metric-value display-6">{{ result.metrics.bmi }}</div>
+                                    <h6>BMI</h6>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if result.metrics.cholesterol %}
+                            <div class="col-md-4">
+                                <div class="metric-card bg-light p-3 rounded">
+                                    <div class="metric-value display-6">{{ result.metrics.cholesterol }}</div>
+                                    <h6>Cholesterol (mg/dL)</h6>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Health Analysis -->
+        {% if result.health_analysis %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h5>🎯 Health Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Detected Conditions:</h6>
+                                {% if result.health_analysis.conditions %}
+                                <ul>
+                                {% for condition in result.health_analysis.conditions %}
+                                    <li>{{ condition }}</li>
+                                {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p class="text-muted">No specific conditions detected</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Risk Level:</h6>
+                                {% if result.health_analysis.risk_level %}
+                                <span class="badge bg-{{ 'danger' if result.health_analysis.risk_level == 'high' else 'warning' if result.health_analysis.risk_level == 'medium' else 'success' }} fs-6">
+                                    {{ result.health_analysis.risk_level.upper() }}
+                                </span>
+                                {% endif %}
+                                
+                                {% if result.health_analysis.recommendations %}
+                                <div class="mt-3">
+                                    <h6>Recommendations:</h6>
+                                    <ul>
+                                    {% for rec in result.health_analysis.recommendations %}
+                                        <li>{{ rec }}</li>
+                                    {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 7-Day Diet Plan -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5>📅 7-Day Personalized Diet Plan</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if result.diet_plan %}
+                        {% for day_num in range(1, 8) %}
+                        {% set day_key = 'day' + day_num|string %}
+                        {% set day_data = result.diet_plan[day_key] %}
+                        {% if day_data %}
+                        <div class="day-section mb-4">
+                            <h5 class="text-primary">Day {{ day_num }}</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Meal</th>
+                                            <th>Food Item</th>
+                                            <th>Calories</th>
+                                            <th>Carbs %</th>
+                                            <th>Protein %</th>
+                                            <th>Fat %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for meal_type in ['breakfast', 'lunch', 'snack', 'dinner'] %}
+                                        {% if day_data[meal_type] %}
+                                        <tr>
+                                            <td class="fw-bold">{{ meal_type.title() }}</td>
+                                            <td>{{ day_data[meal_type].name }}</td>
+                                            <td>{{ day_data[meal_type].calories }} kcal</td>
+                                            <td>{{ day_data[meal_type].carbs }}%</td>
+                                            <td>{{ day_data[meal_type].protein }}%</td>
+                                            <td>{{ day_data[meal_type].fat }}%</td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Daily Total Calculation -->
+                            {% set daily_calories = day_data.breakfast.calories + day_data.lunch.calories + day_data.snack.calories + day_data.dinner.calories %}
+                            <div class="alert alert-info">
+                                <strong>Day {{ day_num }} Total: {{ daily_calories }} calories</strong>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="alert alert-warning">
+                            <h6>No diet plan available</h6>
+                            <p>There was an issue generating the diet plan. Please try again.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regenerate Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5>🔄 Not Satisfied? Regenerate Plan</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/regenerate_plan">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <textarea class="form-control" name="feedback" rows="3" placeholder="Provide feedback for regeneration (e.g., Make it more low-carb, add more protein, include specific cuisines, reduce calories...)"></textarea>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="submit" class="btn btn-warning w-100 h-100">
+                                        🔄 Regenerate Plan
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if result.feedback %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h6>📝 Applied Feedback (v{{ result.version }}):</h6>
+                    <p>{{ result.feedback }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <footer class="bg-light text-center py-3">
+            <p class="text-muted mb-0">&copy; 2026 AI-NutriCare - Personalized Diet Plan Generator</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add loading state to regenerate button
+        document.querySelector('form').addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '⏳ Regenerating...';
+            submitBtn.disabled = true;
+        });
+
+        // Smooth scroll for day sections
+        document.querySelectorAll('.day-section').forEach((section, index) => {
+            section.style.borderLeft = '4px solid #28a745';
+            section.style.paddingLeft = '1rem';
+            section.style.marginBottom = '2rem';
+        });
+    </script>
+</body>
+</html>

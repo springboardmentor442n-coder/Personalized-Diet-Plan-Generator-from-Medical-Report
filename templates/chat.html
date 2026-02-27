@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Nutrition Chatbot - AI-NutriCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .chat-container {
+            height: 60vh;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            margin-right: auto;
+        }
+        .typing-indicator {
+            background-color: #e9ecef;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-right: auto;
+            max-width: 80px;
+            margin-bottom: 1rem;
+        }
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <header class="bg-primary text-white text-center py-3 mb-4">
+            <h1>🤖 AI Nutrition Chatbot</h1>
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <a href="/" class="btn btn-light btn-sm me-2">← Back to Home</a>
+                    {% if session_id and result %}
+                    <a href="/download_json/{{ session_id }}" class="btn btn-success btn-sm">💾 Download JSON</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5>💬 Chat with AI Nutrition Expert</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Chat Container -->
+                        <div id="chatContainer" class="chat-container">
+                            <div class="message bot-message">
+                                <strong>🤖 AI Nutritionist:</strong><br>
+                                Hello! I'm your AI nutrition assistant. I can help you with:
+                                <ul class="mt-2 mb-0">
+                                    <li>Questions about your extracted health metrics</li>
+                                    <li>Understanding your diet plan recommendations</li>
+                                    <li>Suggesting meal alternatives when asked</li>
+                                    <li>General nutrition advice based on your profile</li>
+                                </ul>
+                                What would you like to know?
+                            </div>
+                        </div>
+
+                        <!-- Input Form -->
+                        <form id="chatForm" class="mt-3">
+                            <div class="input-group">
+                                <input type="text" id="messageInput" class="form-control" placeholder="Ask me about your diet plan, health metrics, or meal alternatives..." required>
+                                <button class="btn btn-primary" type="submit">
+                                    <span id="sendButtonText">Send 📤</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                💡 Example questions: "What does my BMI indicate?", "Can you suggest alternatives to Day 1 breakfast?", "How many calories should I eat daily?"
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Context Panel -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h6>📊 Your Current Session Context</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if result %}
+                        <div class="mb-3">
+                            <strong>Patient Info:</strong><br>
+                            Age: {{ result.age }} years<br>
+                            Diet: {{ result.diet_preference.title() }}<br>
+                            Plan Version: v{{ result.version }}
+                        </div>
+
+                        {% if result.metrics %}
+                        <div class="mb-3">
+                            <strong>Health Metrics:</strong><br>
+                            {% if result.metrics.blood_sugar %}Blood Sugar: {{ result.metrics.blood_sugar }}<br>{% endif %}
+                            {% if result.metrics.bmi %}BMI: {{ result.metrics.bmi }}<br>{% endif %}
+                            {% if result.metrics.cholesterol %}Cholesterol: {{ result.metrics.cholesterol }}<br>{% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if result.health_analysis %}
+                        <div class="mb-3">
+                            <strong>Health Analysis:</strong><br>
+                            {% if result.health_analysis.conditions %}
+                            Conditions: {{ result.health_analysis.conditions | join(', ') }}<br>
+                            {% endif %}
+                            {% if result.health_analysis.risk_level %}
+                            Risk Level: {{ result.health_analysis.risk_level.title() }}<br>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <div class="alert alert-info">
+                            <small>
+                                <strong>💡 Tip:</strong> I have access to your complete 7-day diet plan and can suggest alternatives for any meal!
+                            </small>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            <small>
+                                <strong>⚠️ No Context:</strong> You haven't generated a diet plan yet. Visit the home page to create one first for personalized assistance.
+                            </small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Questions -->
+                <div class="card mt-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h6>⚡ Quick Questions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            {% if result %}
+                            <button class="btn btn-outline-primary btn-sm quick-question" data-question="Can you explain my health metrics?">
+                                🩺 Explain My Metrics
+                            </button>
+                            <button class="btn btn-outline-success btn-sm quick-question" data-question="What alternatives can you suggest for Day 1 breakfast?">
+                                🍳 Breakfast Alternatives
+                            </button>
+                            <button class="btn btn-outline-info btn-sm quick-question" data-question="How many calories should I eat daily based on my profile?">
+                                📊 Daily Calorie Needs
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm quick-question" data-question="What foods should I avoid based on my health conditions?">
+                                🚫 Foods to Avoid
+                            </button>
+                            {% else %}
+                            <button class="btn btn-outline-secondary btn-sm" disabled>
+                                Generate a diet plan first
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="bg-light text-center py-3 mt-4">
+            <p class="text-muted mb-0">&copy; 2026 AI-NutriCare - AI Nutrition Chatbot</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/bootstrap.bundle.min.js"></script>
+    <script>
+        const chatContainer = document.getElementById('chatContainer');
+        const chatForm = document.getElementById('chatForm');
+        const messageInput = document.getElementById('messageInput');
+        const sendButtonText = document.getElementById('sendButtonText');
+
+        // Auto-scroll to bottom of chat
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Add message to chat
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            if (isUser) {
+                messageDiv.innerHTML = `<strong>You:</strong><br>${content}`;
+            } else {
+                messageDiv.innerHTML = `<strong>🤖 AI Nutritionist:</strong><br>${content}`;
+            }
+            
+            chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Add typing indicator
+        function addTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            chatContainer.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        // Remove typing indicator
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Send message function
+        async function sendMessage(message) {
+            if (!message.trim()) return;
+
+            // Add user message
+            addMessage(message, true);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Show typing indicator
+            addTypingIndicator();
+            
+            // Update button state
+            sendButtonText.textContent = 'Sending...';
+            chatForm.querySelector('button').disabled = true;
+
+            try {
+                const response = await fetch('/chat_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+
+                if (response.ok) {
+                    addMessage(data.response);
+                } else {
+                    addMessage(`Sorry, I encountered an error: ${data.error}`, false);
+                }
+            } catch (error) {
+                removeTypingIndicator();
+                addMessage('Sorry, I encountered a connection error. Please try again.', false);
+            }
+
+            // Reset button state
+            sendButtonText.textContent = 'Send 📤';
+            chatForm.querySelector('button').disabled = false;
+            messageInput.focus();
+        }
+
+        // Handle form submission
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            sendMessage(messageInput.value);
+        });
+
+        // Handle quick questions
+        document.querySelectorAll('.quick-question').forEach(button => {
+            button.addEventListener('click', function() {
+                const question = this.getAttribute('data-question');
+                messageInput.value = question;
+                sendMessage(question);
+            });
+        });
+
+        // Focus on input when page loads
+        messageInput.focus();
+    </script>
+</body>
+</html>
